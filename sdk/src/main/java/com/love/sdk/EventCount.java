@@ -23,6 +23,7 @@ import java.util.Timer;
  */
 
 public class EventCount {
+
     private static final String TAG = "EventCount";
     private volatile static EventCount instance;
     private static Context mContext;
