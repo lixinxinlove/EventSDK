@@ -17,12 +17,20 @@ import com.love.sdk.util.LocationUtils;
 import com.love.sdk.util.PermissionsUtil;
 
 import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by android on 2017/10/26.
  */
 
 public class EventCount {
+    /**
+     * How often onTimer() is called.
+     */
+    private static final long TIMER_DELAY_IN_SECONDS = 10;  //60
+
 
     private static final String TAG = "EventCount";
     private volatile static EventCount instance;
@@ -30,6 +38,10 @@ public class EventCount {
     private static Activity activity;
     private static Timer timer;
     private static LocationTask task;
+
+
+    private ScheduledExecutorService timerService_;
+
 
     private static Handler handler = new Handler() {
         @Override
@@ -44,6 +56,21 @@ public class EventCount {
 
     private EventCount(Context context) {
         this.mContext = context;
+
+        timerService_ = Executors.newSingleThreadScheduledExecutor();
+        timerService_.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                onTimer();
+            }
+        }, TIMER_DELAY_IN_SECONDS, TIMER_DELAY_IN_SECONDS, TimeUnit.SECONDS);
+
+        Log.e(TAG, Thread.currentThread().getName());
+
+    }
+
+    private void onTimer() {
+        Log.e(TAG, Thread.currentThread().getName());
     }
 
     public static EventCount getInstance(Context context) {
@@ -55,9 +82,9 @@ public class EventCount {
 
     public static void init() {
         //getLocation();
-        timer = new Timer();
-        task = new LocationTask(handler);
-        timer.schedule(task, 0, 5000);
+        // timer = new Timer();
+        // task = new LocationTask(handler);
+        //timer.schedule(task, 0, 5000);
     }
 
 
