@@ -1,6 +1,5 @@
 <resources>
 
-
     <style name="undeadActivityStyle"  parent="Theme.AppCompat.Light.NoActionBar">
         <!-- 背景设置为透明 -->
         <!--    <item name="android:windowBackground">@android:color/transparent</item>-->

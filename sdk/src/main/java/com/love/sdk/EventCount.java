@@ -3,20 +3,14 @@ package com.love.sdk;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.love.sdk.activity.SingleActivity;
-import com.love.sdk.task.LocationTask;
+import com.love.sdk.task.LeeTask;
 import com.love.sdk.util.LocationUtils;
-import com.love.sdk.util.PermissionsUtil;
 
-import java.util.Timer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,52 +20,50 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class EventCount {
-    /**
-     * How often onTimer() is called.
-     */
-    private static final long TIMER_DELAY_IN_SECONDS = 10;  //60
 
+    private static final long TIMER_DELAY_IN_SECONDS = 20;  //60
 
     private static final String TAG = "EventCount";
     private volatile static EventCount instance;
     private static Context mContext;
     private static Activity activity;
-    private static Timer timer;
-    private static LocationTask task;
+   // private static Timer timer;
+   // private static LocationTask task;
+    private LeeTask leeTask;
 
 
-    private ScheduledExecutorService timerService_;
+    private static ScheduledExecutorService timerService_;
 
-
-    private static Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1) {
-                getLocation();
-            }
-        }
-    };
+//    private static Handler handler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            if (msg.what == 1) {
+//            }
+//        }
+//    };
 
 
     private EventCount(Context context) {
         this.mContext = context;
-
-        timerService_ = Executors.newSingleThreadScheduledExecutor();
-        timerService_.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                onTimer();
-            }
-        }, TIMER_DELAY_IN_SECONDS, TIMER_DELAY_IN_SECONDS, TimeUnit.SECONDS);
-
-        Log.e(TAG, Thread.currentThread().getName());
-
-    }
-
-    private void onTimer() {
+        leeTask = new LeeTask();
+        timerService_= Executors.newSingleThreadScheduledExecutor();
+        timerService_.scheduleWithFixedDelay(leeTask, TIMER_DELAY_IN_SECONDS, TIMER_DELAY_IN_SECONDS, TimeUnit.SECONDS);
         Log.e(TAG, Thread.currentThread().getName());
     }
+
+//    private void onTimer() {
+//        Log.e(TAG, Thread.currentThread().getName());
+//        handler.sendEmptyMessage(1);
+//
+//        String data = "&tz=" + DeviceInfo.getTimezoneOffset()
+//                + "&Device=" + DeviceInfo.getDevice()
+//                + "&Locale=" + DeviceInfo.getLocale()
+//                + "&AppVersion=" + DeviceInfo.getAppVersion(mContext)
+//                + "&Density=" + DeviceInfo.getDensity(mContext)
+//                + "&metrics=" + DeviceInfo.getMetrics(mContext);
+//        Log.e(TAG, data);
+//    }
 
     public static EventCount getInstance(Context context) {
         if (instance == null) {
@@ -88,24 +80,24 @@ public class EventCount {
     }
 
 
-    private static void getLocation() {
-        if (PermissionsUtil.checkSinglePermissions(mContext, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            Log.e("EventeCount", "有权限");
-            LocationUtils.getInstance(mContext).getLocation();
-            Location location = LocationUtils.getInstance(mContext).showLocation();
-
-            if (location != null) {
-                Log.e(TAG, location.getLatitude() + "--" + location.getLongitude());
-            } else {
-                Log.e(TAG, "没有获取位置信息");
-            }
-        } else {
-            Log.e("EventeCount", "没有权限");
-            Intent intent = new Intent(mContext, SingleActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
-        }
-    }
+//    private static void getLocation() {
+//        if (PermissionsUtil.checkSinglePermissions(mContext, Manifest.permission.ACCESS_FINE_LOCATION)) {
+//            Log.e("EventeCount", "有权限");
+//            LocationUtils.getInstance(mContext).getLocation();
+//            Location location = LocationUtils.getInstance(mContext).showLocation();
+//
+//            if (location != null) {
+//                Log.e(TAG, location.getLatitude() + "--" + location.getLongitude());
+//            } else {
+//                Log.e(TAG, "没有获取位置信息");
+//            }
+//        } else {
+//            Log.e("EventeCount", "没有权限");
+//            Intent intent = new Intent(mContext, SingleActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            mContext.startActivity(intent);
+//        }
+//    }
 
     public static void setActivity(Activity act) {
         activity = act;
