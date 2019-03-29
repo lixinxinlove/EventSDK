@@ -14,6 +14,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        EventCount.getInstance(this).init();
+        EventCount.init(this);
     }
 }
